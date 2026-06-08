@@ -2,10 +2,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_write_engine, database_health_check
 from app.core.settings import settings
 from app.core.security import hash_password
-from app.core.config import logger
+from app.core.logging_configuration import logger
 from app.db.base import Base
 from app.models.user import User, UserRole
+from app.core.database import Base
 
+# Import ALL models here
+from app.models.user import User
+from app.models.banner import HeroSection
+from app.models.product import Product
+from app.models.order import Order
 
 # --------------------------
 # CREATE TABLES

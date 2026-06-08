@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.core.config import settings
+from app.core.logging_configuration import settings
 from app.db.session import get_db
 from app.services.auth_service import auth_service
 from app.services.email_service import email_service

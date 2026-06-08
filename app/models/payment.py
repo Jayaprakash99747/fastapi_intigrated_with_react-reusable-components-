@@ -28,167 +28,79 @@ from app.core.constants import (
 class Payment(Base):
     __tablename__ = "payments"
 
-    id = Column(
-        Integer,
-        primary_key=True,
-        index=True,
-    )
+    id = Column(Integer,primary_key=True,index=True,)
 
-    order_id = Column(
-        Integer,
-        ForeignKey(
-            "orders.id",
-            ondelete="CASCADE",
-        ),
-        nullable=False,
-        unique=True,
-        index=True,
-    )
+    order_id = Column(Integer,ForeignKey("orders.id",ondelete="CASCADE",),nullable=False,unique=True,index=True,)
+    
+    provider = Column(Enum(PaymentProvider),nullable=False,)
 
-    provider = Column(
-        Enum(PaymentProvider),
-        nullable=False,
-    )
+    amount = Column(Float,nullable=False,)
 
-    amount = Column(
-        Float,
-        nullable=False,
-    )
+    currency = Column(String(10),default="INR",nullable=False,)
 
-    currency = Column(
-        String(10),
-        default="INR",
-        nullable=False,
-    )
-
-    status = Column(
-        Enum(PaymentStatus),
-        default=PaymentStatus.PENDING,
-        nullable=False,
-    )
+    status = Column(Enum(PaymentStatus),default=PaymentStatus.PENDING,nullable=False,)
 
     # ======================================================
     # RAZORPAY
     # ======================================================
 
-    provider_order_id = Column(
-        String(255),
-        nullable=True,
-        index=True,
-    )
+    provider_order_id = Column(String(255),nullable=True,index=True,)
 
-    provider_payment_id = Column(
-        String(255),
-        nullable=True,
-        index=True,
-    )
+    provider_payment_id = Column(String(255),nullable=True,index=True,)
 
-    provider_signature = Column(
-        String(1000),
-        nullable=True,
-    )
+    provider_signature = Column(String(1000),nullable=True,)
 
     # ======================================================
     # STRIPE
     # ======================================================
 
-    stripe_payment_intent_id = Column(
-        String(255),
-        nullable=True,
-        index=True,
-    )
+    stripe_payment_intent_id = Column(String(255),nullable=True,index=True,)
 
-    stripe_customer_id = Column(
-        String(255),
-        nullable=True,
-    )
+    stripe_customer_id = Column(String(255),nullable=True,)
 
-    stripe_charge_id = Column(
-        String(255),
-        nullable=True,
-    )
+    stripe_charge_id = Column(String(255),nullable=True,)
 
     # ======================================================
     # REFUND
     # ======================================================
 
-    refund_id = Column(
-        String(255),
-        nullable=True,
-        index=True,
-    )
+    refund_id = Column(String(255),nullable=True,index=True,)
 
-    refunded_amount = Column(
-        Float,
-        default=0,
-        nullable=False,
-    )
+    refunded_amount = Column(Float,default=0,nullable=False,)
 
-    refund_reason = Column(
-        Text,
-        nullable=True,
-    )
+    refund_reason = Column(Text,nullable=True,)
 
-    refunded_at = Column(
-        DateTime,
-        nullable=True,
-    )
+    refunded_at = Column(DateTime,nullable=True,)
 
     # ======================================================
     # FAILURE
     # ======================================================
 
-    failure_reason = Column(
-        Text,
-        nullable=True,
-    )
+    failure_reason = Column(Text,nullable=True,)
 
     # ======================================================
     # WEBHOOK
     # ======================================================
 
-    webhook_received = Column(
-        Boolean,
-        default=False,
-        nullable=False,
-    )
+    webhook_received = Column(Boolean,default=False,nullable=False,)
 
-    webhook_payload = Column(
-        Text,
-        nullable=True,
-    )
+    webhook_payload = Column(Text,nullable=True,)
 
     # ======================================================
     # AUDIT
     # ======================================================
 
-    paid_at = Column(
-        DateTime,
-        nullable=True,
-    )
+    paid_at = Column(DateTime,nullable=True,)
 
-    created_at = Column(
-        DateTime,
-        default=datetime.utcnow,
-        nullable=False,
-    )
+    created_at = Column(DateTime,default=datetime.utcnow,nullable=False,)
 
-    updated_at = Column(
-        DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow,
-        nullable=False,
-    )
+    updated_at = Column(DateTime,default=datetime.utcnow,onupdate=datetime.utcnow,nullable=False,)
 
     # ======================================================
     # RELATIONSHIP
     # ======================================================
 
-    order = relationship(
-        "Order",
-        back_populates="payment",
-        lazy="joined",
-    )
+    order = relationship("Order",back_populates="payment",lazy="joined",)
 
     # ======================================================
     # HELPERS

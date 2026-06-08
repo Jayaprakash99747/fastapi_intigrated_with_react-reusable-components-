@@ -539,7 +539,7 @@ def extract_bearer_token(
         )
 
 from jose import jwt, JWTError
-from app.core.config import settings
+from app.core.logging_configuration import settings
 
 
 def decode_access_token(token: str):

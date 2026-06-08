@@ -36,7 +36,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from app.models.user import User, RefreshToken
-from app.core.config import settings
+from app.core.logging_configuration import settings
 
 
 # =====================================================

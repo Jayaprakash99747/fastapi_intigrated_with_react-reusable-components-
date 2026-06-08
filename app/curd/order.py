@@ -25,7 +25,7 @@ from app.models.product import (
 from app.models.coupon import (
     Coupon,
 )
-
+from app.models.cart import CartItem
 
 class OrderCRUD:
 

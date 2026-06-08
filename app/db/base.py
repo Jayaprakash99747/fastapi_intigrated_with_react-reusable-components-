@@ -97,7 +97,7 @@ from app.models.coupon import (
 # ==========================================================
 
 from app.models.banner import (
-    Banner,
+    HeroSection,
 )
 
 # ==========================================================

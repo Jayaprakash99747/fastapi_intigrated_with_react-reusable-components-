@@ -123,13 +123,18 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
             # auth routes
             "/api/auth/login",
+            "/api/auth/login/",
             "/api/auth/register",
+            "/api/auth/register/",
 
             # favicon
             "/favicon.ico",
         }
 
     async def dispatch(self, request: Request, call_next):
+        print("=" * 50)
+        print("PATH:", request.url.path)
+        print("METHOD:", request.method)
 
         path = request.url.path
 
@@ -139,7 +144,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
         # ✅ get token
         auth_header = request.headers.get("Authorization")
-
+        print("AUTH HEADER:", auth_header)
         if not auth_header:
             return JSONResponse(
                 status_code=401,
@@ -148,6 +153,12 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
         try:
             scheme, token = auth_header.split()
+            print("TOKEN:", token)
+
+            payload = decode_access_token(token)
+
+            print("PAYLOAD:", payload)
+            print("TOKEN:", token)
 
             if scheme.lower() != "bearer":
                 return JSONResponse(
@@ -156,7 +167,8 @@ class AuthMiddleware(BaseHTTPMiddleware):
                 )
 
             payload = decode_access_token(token)
-
+            print("TOKEN:", token)
+            print("PAYLOAD:", payload)
             if not payload:
                 return JSONResponse(
                     status_code=401,

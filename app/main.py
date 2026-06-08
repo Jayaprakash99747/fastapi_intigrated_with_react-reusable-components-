@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 # ============================
 # CORE IMPORTS
 # ============================
-from app.core.config import settings
+from app.core.logging_configuration import settings
 from app.db.init_db import init_db
 # ============================
 # MIDDLEWARE
@@ -17,6 +17,10 @@ from app.middleware.auth import AuthMiddleware
 # ============================
 # EXCEPTION HANDLERS
 # ============================
+
+from fastapi.staticfiles import StaticFiles
+
+
 from app.exceptions.handlers import (
     http_exception_handler,
     validation_exception_handler,
@@ -44,6 +48,7 @@ from app.api.routers import (
     banners,
     admin,
 )
+import os
 
 # ============================
 # APP LIFESPAN (PRODUCTION SAFE)
@@ -81,13 +86,22 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
+os.makedirs(
+    "uploads/images",
+    exist_ok=True
+)
+app.mount(
+    "/uploads",
+    StaticFiles(directory="uploads"),
+    name="uploads"
+)
 
 # ============================
 # MIDDLEWARE REGISTRATION
 # ============================
 
-app.add_middleware(LoggingMiddleware)
-app.add_middleware(AuthMiddleware)
+# app.add_middleware(LoggingMiddleware)
+# app.add_middleware(AuthMiddleware)
 add_cors_middleware(app)
 
 
@@ -126,7 +140,7 @@ app.include_router(orders.router, prefix="/api")
 # app.include_router(reviews.router, prefix="/api")
 # app.include_router(inventory.router, prefix="/api")
 # app.include_router(coupons.router, prefix="/api")
-# app.include_router(banners.router, prefix="/api")
+app.include_router(banners.router, prefix="/api")
 app.include_router(admin.router,prefix="/api")
 
 

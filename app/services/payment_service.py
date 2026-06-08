@@ -35,7 +35,7 @@ from app.models.payment import (
 
 from app.models.order import Order
 from app.curd.payment import payment_crud
-from app.core.config import settings
+from app.core.logging_configuration import settings
 
 
 # NOTE:

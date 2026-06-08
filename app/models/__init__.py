@@ -3,7 +3,7 @@ from .product import Product
 from .order import Order
 from .payment import Payment
 from .review import Review
-from .banner import Banner
+from .banner import HeroSection
 from .coupon import Coupon
 from .inventory import Inventory
 from .cart import CartItem
