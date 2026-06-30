@@ -1,3 +1,223 @@
+
+
+from typing import Annotated
+
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from redis.asyncio import Redis
+
+from app.db.session import get_db
+from app.db.redis import get_redis
+
+from app.models.user import User, UserRole
+
+from app.core.security import (
+    verify_access_token,
+    get_user_id_from_payload,
+    is_token_blacklisted,
+)
+
+
+# =====================================================
+# OAUTH2
+# =====================================================
+
+oauth2_scheme = OAuth2PasswordBearer(
+    tokenUrl="/api/auth/login"
+)
+
+
+# =====================================================
+# COMMON DEPENDENCIES
+# =====================================================
+
+DBSession = Annotated[
+    AsyncSession,
+    Depends(get_db)
+]
+
+RedisSession = Annotated[
+    Redis,
+    Depends(get_redis)
+]
+
+
+# =====================================================
+# CURRENT USER
+# =====================================================
+
+# async def get_current_user(
+#     token: str = Depends(oauth2_scheme),
+#     db: AsyncSession = Depends(get_db),
+#     redis: Redis = Depends(get_redis),
+# ) -> User:
+
+#     # check blacklist
+
+#     blacklisted = await is_token_blacklisted(
+#         redis,
+#         token
+#     )
+
+#     if blacklisted:
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail="Token revoked"
+#         )
+
+#     # decode token
+
+#     payload = verify_access_token(token)
+
+#     user_id = get_user_id_from_payload(payload)
+
+#     if not user_id:
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail="Invalid token"
+#         )
+
+#     # fetch user
+
+#     result = await db.execute(
+#         select(User).where(
+#             User.id == int(user_id)
+#         )
+#     )
+
+#     user = result.scalar_one_or_none()
+
+#     if not user:
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail="User not found"
+#         )
+
+#     if not user.is_active:
+#         raise HTTPException(
+#             status_code=status.HTTP_403_FORBIDDEN,
+#             detail="Account disabled"
+#         )
+
+#     return user
+
+
+async def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    db: AsyncSession = Depends(get_db),
+    redis: Redis = Depends(get_redis),
+):
+
+    print("=" * 50)
+    print("TOKEN FROM DEPENDENCY:", token)
+
+    # blacklisted = await is_token_blacklisted(redis, token)
+
+    # print("BLACKLISTED:", blacklisted)
+
+    # payload = verify_access_token(token)
+
+    # print("PAYLOAD:", payload)
+
+    # user_id = get_user_id_from_payload(payload)
+
+    # print("USER_ID:", user_id)
+
+    # result = await db.execute(
+    #     select(User).where(User.id == int(user_id))
+    # )
+
+    # user = result.scalar_one_or_none()
+
+    # print("USER:", user)
+
+    # return user
+
+    # Skip Redis blacklist during testing
+    blacklisted = False
+
+    payload = verify_access_token(token)
+
+    user_id = get_user_id_from_payload(payload)
+
+    result = await db.execute(
+        select(User).where(User.id == int(user_id))
+    )
+
+    user = result.scalar_one_or_none()
+
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+
+    return user
+
+# =====================================================
+# VERIFIED USER
+# =====================================================
+
+async def get_verified_user(
+    current_user: User = Depends(
+        get_current_user
+    )
+) -> User:
+
+    if not current_user.is_email_verified:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Email not verified"
+        )
+
+    return current_user
+
+
+# =====================================================
+# ADMIN USER
+# =====================================================
+
+async def get_admin_user(
+    current_user: User = Depends(
+        get_verified_user
+    )
+) -> User:
+
+    if current_user.role != UserRole.ADMIN:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin access required"
+        )
+
+    return current_user
+
+
+# =====================================================
+# CUSTOMER USER
+# =====================================================
+
+async def get_customer_user(
+    current_user: User = Depends(
+        get_verified_user
+    )
+) -> User:
+
+    if current_user.role != UserRole.CUSTOMER:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Customer access required"
+        )
+
+    return current_user
+
+
+
+
+
+
+
+
 # from fastapi import Depends, HTTPException, status
 # from jose import jwt, JWTError
 # from sqlalchemy.ext.asyncio import AsyncSession
@@ -520,197 +740,3 @@
 
 
 
-
-
-from typing import Annotated
-
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
-
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from redis.asyncio import Redis
-
-from app.db.session import get_db
-from app.db.redis import get_redis
-
-from app.models.user import User, UserRole
-
-from app.core.security import (
-    verify_access_token,
-    get_user_id_from_payload,
-    is_token_blacklisted,
-)
-
-
-# =====================================================
-# OAUTH2
-# =====================================================
-
-oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl="/api/auth/login"
-)
-
-
-# =====================================================
-# COMMON DEPENDENCIES
-# =====================================================
-
-DBSession = Annotated[
-    AsyncSession,
-    Depends(get_db)
-]
-
-RedisSession = Annotated[
-    Redis,
-    Depends(get_redis)
-]
-
-
-# =====================================================
-# CURRENT USER
-# =====================================================
-
-# async def get_current_user(
-#     token: str = Depends(oauth2_scheme),
-#     db: AsyncSession = Depends(get_db),
-#     redis: Redis = Depends(get_redis),
-# ) -> User:
-
-#     # check blacklist
-
-#     blacklisted = await is_token_blacklisted(
-#         redis,
-#         token
-#     )
-
-#     if blacklisted:
-#         raise HTTPException(
-#             status_code=status.HTTP_401_UNAUTHORIZED,
-#             detail="Token revoked"
-#         )
-
-#     # decode token
-
-#     payload = verify_access_token(token)
-
-#     user_id = get_user_id_from_payload(payload)
-
-#     if not user_id:
-#         raise HTTPException(
-#             status_code=status.HTTP_401_UNAUTHORIZED,
-#             detail="Invalid token"
-#         )
-
-#     # fetch user
-
-#     result = await db.execute(
-#         select(User).where(
-#             User.id == int(user_id)
-#         )
-#     )
-
-#     user = result.scalar_one_or_none()
-
-#     if not user:
-#         raise HTTPException(
-#             status_code=status.HTTP_401_UNAUTHORIZED,
-#             detail="User not found"
-#         )
-
-#     if not user.is_active:
-#         raise HTTPException(
-#             status_code=status.HTTP_403_FORBIDDEN,
-#             detail="Account disabled"
-#         )
-
-#     return user
-
-
-async def get_current_user(
-    token: str = Depends(oauth2_scheme),
-    db: AsyncSession = Depends(get_db),
-    redis: Redis = Depends(get_redis),
-):
-
-    print("=" * 50)
-    print("TOKEN FROM DEPENDENCY:", token)
-
-    blacklisted = await is_token_blacklisted(redis, token)
-
-    print("BLACKLISTED:", blacklisted)
-
-    payload = verify_access_token(token)
-
-    print("PAYLOAD:", payload)
-
-    user_id = get_user_id_from_payload(payload)
-
-    print("USER_ID:", user_id)
-
-    result = await db.execute(
-        select(User).where(User.id == int(user_id))
-    )
-
-    user = result.scalar_one_or_none()
-
-    print("USER:", user)
-
-    return user
-
-# =====================================================
-# VERIFIED USER
-# =====================================================
-
-async def get_verified_user(
-    current_user: User = Depends(
-        get_current_user
-    )
-) -> User:
-
-    if not current_user.is_email_verified:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Email not verified"
-        )
-
-    return current_user
-
-
-# =====================================================
-# ADMIN USER
-# =====================================================
-
-async def get_admin_user(
-    current_user: User = Depends(
-        get_verified_user
-    )
-) -> User:
-
-    if current_user.role != UserRole.ADMIN:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Admin access required"
-        )
-
-    return current_user
-
-
-# =====================================================
-# CUSTOMER USER
-# =====================================================
-
-async def get_customer_user(
-    current_user: User = Depends(
-        get_verified_user
-    )
-) -> User:
-
-    if current_user.role != UserRole.CUSTOMER:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Customer access required"
-        )
-
-    return current_user

@@ -20,66 +20,25 @@ from app.core.database import Base
 class Coupon(Base):
     __tablename__ = "coupons"
 
-    id = Column(
-        Integer,
-        primary_key=True,
-        index=True,
-    )
+    id = Column(Integer,primary_key=True,index=True,)
 
-    code = Column(
-        String(50),
-        unique=True,
-        nullable=False,
-        index=True,
-    )
+    code = Column(String(50),unique=True,nullable=False,index=True,)
 
-    discount_percent = Column(
-        Float,
-        nullable=False,
-    )
+    discount_percent = Column(Float,nullable=False,)
 
-    max_uses = Column(
-        Integer,
-        default=100,
-        nullable=False,
-    )
+    max_uses = Column(Integer,default=100,nullable=False,)
 
-    current_uses = Column(
-        Integer,
-        default=0,
-        nullable=False,
-    )
+    current_uses = Column(Integer,default=0,nullable=False,)
 
-    min_order_amount = Column(
-        Float,
-        default=0,
-        nullable=False,
-    )
+    min_order_amount = Column(Float,default=0,nullable=False,)
 
-    is_active = Column(
-        Boolean,
-        default=True,
-        nullable=False,
-    )
+    is_active = Column(Boolean,default=True,nullable=False,)
 
-    expiry_date = Column(
-        DateTime,
-        nullable=False,
-        index=True,
-    )
+    expiry_date = Column(DateTime,nullable=False,index=True,)
 
-    created_at = Column(
-        DateTime,
-        default=datetime.utcnow,
-        nullable=False,
-    )
+    created_at = Column(DateTime,default=datetime.utcnow,nullable=False,)
 
-    updated_at = Column(
-        DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow,
-        nullable=False,
-    )
+    updated_at = Column(DateTime,default=datetime.utcnow,onupdate=datetime.utcnow,nullable=False,)
 
     # ======================================================
     # DATABASE CONSTRAINTS
@@ -87,31 +46,15 @@ class Coupon(Base):
 
     __table_args__ = (
 
-        CheckConstraint(
-            "discount_percent >= 0",
-            name="ck_coupon_discount_positive",
-        ),
+        CheckConstraint("discount_percent >= 0",name="ck_coupon_discount_positive",),
 
-        CheckConstraint(
-            "discount_percent <= 100",
-            name="ck_coupon_discount_max",
-        ),
+        CheckConstraint("discount_percent <= 100",name="ck_coupon_discount_max",),
 
-        CheckConstraint(
-            "max_uses >= 0",
-            name="ck_coupon_max_uses_positive",
-        ),
+        CheckConstraint("max_uses >= 0",name="ck_coupon_max_uses_positive",),
 
-        CheckConstraint(
-            "current_uses >= 0",
-            name="ck_coupon_current_uses_positive",
-        ),
+        CheckConstraint("current_uses >= 0",name="ck_coupon_current_uses_positive",),
 
-        CheckConstraint(
-            "min_order_amount >= 0",
-            name="ck_coupon_min_order_amount_positive",
-        ),
-    )
+        CheckConstraint("min_order_amount >= 0",name="ck_coupon_min_order_amount_positive",),)
 
     # ======================================================
     # HELPER PROPERTIES

@@ -36,27 +36,12 @@ class HeroSection(Base):
 
     display_order = Column(Integer, default=1)
 
-    created_at = Column(
-        DateTime,
-        default=datetime.utcnow
-    )
+    created_at = Column(DateTime,default=datetime.utcnow)
 
-    updated_at = Column(
-        DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow
-    )
-    is_deleted = Column(
-        Boolean,
-        default=False,
-        nullable=False,
-        index=True
-    )
+    updated_at = Column(DateTime,default=datetime.utcnow,onupdate=datetime.utcnow)
+    is_deleted = Column(Boolean,default=False,nullable=False,index=True)
 
-    deleted_at = Column(
-        DateTime,
-        nullable=True
-    )
+    deleted_at = Column(DateTime,nullable=True)
 
 
 

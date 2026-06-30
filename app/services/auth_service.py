@@ -37,16 +37,19 @@ from sqlalchemy import select
 
 from app.models.user import User, RefreshToken
 from app.core.logging_configuration import settings
-
+from app.core.security import (
+    hash_password,
+    verify_password,
+)
 
 # =====================================================
 # PASSWORD HASHING (PRODUCTION GRADE)
 # =====================================================
 
-pwd_context = CryptContext(
-    schemes=["bcrypt"],
-    deprecated="auto",
-)
+# pwd_context = CryptContext(
+#     schemes=["bcrypt"],
+#     deprecated="auto",
+# )
 
 
 class AuthService:
@@ -55,19 +58,19 @@ class AuthService:
     # HASH PASSWORD
     # =====================================================
 
-    def hash_password(self, password: str) -> str:
-        return pwd_context.hash(password)
+    # def hash_password(self, password: str) -> str:
+    #     return pwd_context.hash(password)
 
     # =====================================================
     # VERIFY PASSWORD
     # =====================================================
 
-    def verify_password(
-        self,
-        plain_password: str,
-        hashed_password: str,
-    ) -> bool:
-        return pwd_context.verify(plain_password, hashed_password)
+    # def verify_password(
+    #     self,
+    #     plain_password: str,
+    #     hashed_password: str,
+    # ) -> bool:
+    #     return pwd_context.verify(plain_password, hashed_password)
 
     # =====================================================
     # CREATE ACCESS TOKEN
@@ -129,7 +132,7 @@ class AuthService:
             payload = jwt.decode(
                 token,
                 settings.SECRET_KEY,
-                algorithms=[settings.ALGORITHM],
+                algorithms=[settings.JWT_ALGORITHM],
             )
             return payload
 
@@ -178,7 +181,7 @@ class AuthService:
         password: str,
     ) -> User:
 
-        hashed_password = self.hash_password(password)
+        hashed_password = hash_password(password)
 
         user = User(
             username=username,
@@ -210,7 +213,7 @@ class AuthService:
         if not user:
             return None, None, None
 
-        if not self.verify_password(password, user.password):
+        if not verify_password(password, user.password):
             return None, None, None
 
         access_token = self.create_access_token(

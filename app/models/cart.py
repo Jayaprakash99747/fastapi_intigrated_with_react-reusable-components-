@@ -8,26 +8,14 @@ class CartItem(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
-    user_id = Column(
-        Integer,
-        ForeignKey("users.id", ondelete="CASCADE"),
-        nullable=False,
-        index=True,
-    )
+    user_id = Column(Integer,ForeignKey("users.id", ondelete="CASCADE"),nullable=False,index=True,)
 
-    product_id = Column(
-        Integer,
-        ForeignKey("products.id", ondelete="CASCADE"),
-        nullable=False,
-    )
+    product_id = Column(Integer,ForeignKey("products.id", ondelete="CASCADE"),nullable=False,)
 
     quantity = Column(Integer, default=1)
 
-    # ✅ FIX: required for User.cart_items
-    user = relationship(
-        "User",
-        back_populates="cart_items"
-    )
+# ✅ FIX: required for User.cart_items
+    user = relationship("User",back_populates="cart_items")
 
     # (optional but recommended)
     product = relationship("Product")
@@ -37,23 +25,11 @@ class WishlistItem(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
-    user_id = Column(
-        Integer,
-        ForeignKey("users.id", ondelete="CASCADE"),
-        nullable=False,
-        index=True,
-    )
+    user_id = Column(Integer,ForeignKey("users.id", ondelete="CASCADE"),nullable=False,index=True,)
 
-    product_id = Column(
-        Integer,
-        ForeignKey("products.id", ondelete="CASCADE"),
-        nullable=False,
-    )
+    product_id = Column(Integer,ForeignKey("products.id", ondelete="CASCADE"),nullable=False,)
 
     # ✅ FIX: required for User.wishlist_items
-    user = relationship(
-        "User",
-        back_populates="wishlist_items"
-    )
+    user = relationship("User",back_populates="wishlist_items")
 
     product = relationship("Product")

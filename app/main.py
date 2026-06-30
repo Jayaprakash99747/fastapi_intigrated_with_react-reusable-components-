@@ -20,6 +20,7 @@ from app.middleware.auth import AuthMiddleware
 
 from fastapi.staticfiles import StaticFiles
 
+from app.db.create_admin import create_admin_user
 
 from app.exceptions.handlers import (
     http_exception_handler,
@@ -56,22 +57,20 @@ import os
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """
-    Handles startup/shutdown events
-    """
 
-    # Startup
     print("🚀 Starting Application...")
 
-    await init_db()  # auto-create tables (dev mode / bootstrap)
+    await init_db()
 
     print("✅ Database initialized")
 
+    await create_admin_user()
+
+    print("✅ Default admin check completed")
+
     yield
 
-    # Shutdown
-    print(" Shutting down Application...")
-
+    print("Shutting down Application...")
 
 # ============================
 # FASTAPI APP INIT

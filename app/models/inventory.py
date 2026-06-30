@@ -20,69 +20,27 @@ from app.core.database import Base
 class Inventory(Base):
     __tablename__ = "inventory"
 
-    id = Column(
-        Integer,
-        primary_key=True,
-        index=True,
-    )
+    id = Column(Integer,primary_key=True,index=True,)
 
-    product_id = Column(
-        Integer,
-        ForeignKey(
-            "products.id",
-            ondelete="CASCADE",
-        ),
-        nullable=False,
-        unique=True,
-        index=True,
-    )
+    product_id = Column(Integer,ForeignKey("products.id",ondelete="CASCADE",),nullable=False,unique=True,index=True,)
 
-    stock_in = Column(
-        Integer,
-        default=0,
-        nullable=False,
-    )
+    stock_in = Column(Integer,default=0,nullable=False,)
 
-    stock_out = Column(
-        Integer,
-        default=0,
-        nullable=False,
-    )
+    stock_out = Column(Integer,default=0,nullable=False,)
 
-    available_stock = Column(
-        Integer,
-        default=0,
-        nullable=False,
-    )
+    available_stock = Column(Integer,default=0,nullable=False,)
 
-    reorder_level = Column(
-        Integer,
-        default=10,
-        nullable=False,
-    )
+    reorder_level = Column(Integer,default=10,nullable=False,)
 
-    last_updated = Column(
-        DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow,
-        nullable=False,
-    )
+    last_updated = Column(DateTime,default=datetime.utcnow,onupdate=datetime.utcnow,nullable=False,)
 
-    created_at = Column(
-        DateTime,
-        default=datetime.utcnow,
-        nullable=False,
-    )
+    created_at = Column(DateTime,default=datetime.utcnow,nullable=False,)
 
     # ======================================================
     # RELATIONSHIP
     # ======================================================
 
-    product = relationship(
-        "Product",
-        back_populates="inventory",
-        lazy="joined",
-    )
+    product = relationship("Product",back_populates="inventory",lazy="joined",)
 
     # ======================================================
     # CONSTRAINTS
@@ -90,26 +48,13 @@ class Inventory(Base):
 
     __table_args__ = (
 
-        CheckConstraint(
-            "stock_in >= 0",
-            name="ck_inventory_stock_in_positive",
-        ),
+        CheckConstraint("stock_in >= 0",name="ck_inventory_stock_in_positive",),
 
-        CheckConstraint(
-            "stock_out >= 0",
-            name="ck_inventory_stock_out_positive",
-        ),
+        CheckConstraint("stock_out >= 0",name="ck_inventory_stock_out_positive",),
 
-        CheckConstraint(
-            "available_stock >= 0",
-            name="ck_inventory_available_stock_positive",
-        ),
+        CheckConstraint("available_stock >= 0",name="ck_inventory_available_stock_positive",),
 
-        CheckConstraint(
-            "reorder_level >= 0",
-            name="ck_inventory_reorder_level_positive",
-        ),
-    )
+        CheckConstraint("reorder_level >= 0",name="ck_inventory_reorder_level_positive",),)
 
     # ======================================================
     # HELPER PROPERTIES

@@ -108,7 +108,7 @@ from app.core.constants import (
 # ==========================================================
 
 pwd_context = CryptContext(
-    schemes=["argon2"], 
+    schemes=["argon2", "bcrypt"],
     deprecated="auto"
 )
 
@@ -538,17 +538,17 @@ def extract_bearer_token(
             detail="Invalid authorization header",
         )
 
-from jose import jwt, JWTError
-from app.core.logging_configuration import settings
+# from jose import jwt, JWTError
+# from app.core.logging_configuration import settings
 
 
-def decode_access_token(token: str):
-    try:
-        payload = jwt.decode(
-            token,
-            settings.SECRET_KEY,
-            algorithms=[settings.ALGORITHM]
-        )
-        return payload
-    except JWTError:
-        return None
+# def decode_access_token(token: str):
+#     try:
+#         payload = jwt.decode(
+#             token,
+#             settings.SECRET_KEY,
+#             algorithms=[settings.ALGORITHM]
+#         )
+#         return payload
+#     except JWTError:
+#         return None

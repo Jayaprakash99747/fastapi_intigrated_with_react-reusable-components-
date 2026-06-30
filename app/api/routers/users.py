@@ -17,6 +17,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 from app.services.user_service import user_service
 from app.services.auth_service import auth_service
+from app.api.dependencies import get_current_user
 
 from app.schemas.user import (
     UserUpdateSchema,
@@ -31,22 +32,22 @@ router = APIRouter(prefix="/users", tags=["Users"])
 # DEPENDENCY: GET CURRENT USER (JWT BASED)
 # =====================================================
 
-async def get_current_user(
-    db: AsyncSession = Depends(get_db),
-    token: str = Depends(lambda: None),  # replace with real JWT dependency
-):
+# async def get_current_user(
+#     db: AsyncSession = Depends(get_db),
+#     token: str = Depends(lambda: None),  # replace with real JWT dependency
+# ):
 
-    # NOTE: Replace this with real JWT decode dependency
-    # Example:
-    # payload = auth_service.decode_token(token)
+#     # NOTE: Replace this with real JWT decode dependency
+#     # Example:
+#     # payload = auth_service.decode_token(token)
 
-    if not token:
-        raise HTTPException(
-            status_code=401,
-            detail="Not authenticated",
-        )
+#     if not token:
+#         raise HTTPException(
+#             status_code=401,
+#             detail="Not authenticated",
+#         )
 
-    return await user_service.get_user(db, user_id=1)
+#     return await user_service.get_user(db, user_id=1)
 
 
 # =====================================================

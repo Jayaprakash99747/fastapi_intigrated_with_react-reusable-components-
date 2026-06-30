@@ -101,7 +101,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-from app.core.security import decode_access_token
+from app.core.security import decode_token,verify_access_token,verify_refresh_token
 
 
 class AuthMiddleware(BaseHTTPMiddleware):
@@ -155,7 +155,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
             scheme, token = auth_header.split()
             print("TOKEN:", token)
 
-            payload = decode_access_token(token)
+            payload = decode_token(token)
 
             print("PAYLOAD:", payload)
             print("TOKEN:", token)
@@ -166,7 +166,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
                     content={"detail": "Invalid auth scheme"}
                 )
 
-            payload = decode_access_token(token)
+            payload = decode_token(token)
             print("TOKEN:", token)
             print("PAYLOAD:", payload)
             if not payload:
